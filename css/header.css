@@ -3,7 +3,7 @@ header {
   margin-top: 10px;
   border-bottom: 1px solid #ededef;
   padding-bottom: 10px;
-  animation: menu-header 3s ease-in-out;
+  /* animation: menu-header 3s ease-in-out;*/
 }
 
 /* 인포바 */
@@ -59,7 +59,7 @@ menu-bar__location-icon {
   position: relative;
 }
 
-.menu-bar__icons-read {
+/* .menu-bar__icons-read {
   width: 8px;
   height: 8px;
   border-radius: 50%;
@@ -67,7 +67,7 @@ menu-bar__location-icon {
   position: absolute;
   margin-left: 90px;
   margin-bottom: 20px;
-}
+} */
 
 @keyframes menu-header {
   0% {
