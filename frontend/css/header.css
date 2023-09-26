@@ -40,7 +40,7 @@ header {
   width: 15px;
 }
 
-menu-bar__location-icon {
+.menu-bar__location-icon {
   padding-top: 5px;
   display: flex;
   justify-content: center;
