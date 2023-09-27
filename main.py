@@ -11,17 +11,17 @@ con = sqlite3.connect('db.db',check_same_thread=False)
 cur = con.cursor()
 
 # 서버에 테이블이 없을 시 생성
-cur.execute(f"""
-            CREATE TABLE IF NOT EXISTS items (
-	            id INTEGER PRIMARY KEY,
-	            title TEXT NOT NULL,
-                image BLOB,
-                price INTEGER NOT NULL,
-                description TEXT,
-                place TEXT NOT NULL,
-                insertAt INTEGER NOT NULL
-            );
-            """)
+# cur.execute(f"""
+#             CREATE TABLE IF NOT EXISTS items (
+# 	            id INTEGER PRIMARY KEY,
+# 	            title TEXT NOT NULL,
+#                 image BLOB,
+#                 price INTEGER NOT NULL,
+#                 description TEXT,
+#                 place TEXT NOT NULL,
+#                 insertAt INTEGER NOT NULL
+#             );
+#             """)
 
 app = FastAPI()
 
@@ -31,11 +31,14 @@ manager = LoginManager(SECRET, '/login')
 
 # 유저 찾기
 @manager.user_loader()
-def query_user(id):
+def query_user(data):
+    WHERE_STATEMENTS = f'id="{data}"'
+    if type(data) == dict:
+        WHERE_STATEMENTS = f'''id="{data['id']}"'''
     con.row_factory = sqlite3.Row
     cur = con.cursor()
     user = cur.execute(f"""
-                       SELECT * from users WHERE id='{id}'
+                       SELECT * from users WHERE {WHERE_STATEMENTS}
                        """).fetchone()
     return user
 
@@ -51,11 +54,11 @@ def login(id:Annotated[str,Form()],
         raise InvalidCredentialsException
     
     access_token = manager.create_access_token(data={
-        # 'sub' : {
+        'sub' : {
             'id':user['id'],
             'name':user['name'],
             'email':user['email']
-        # }
+        }
     })
     
     return {'access_token':access_token}
@@ -98,7 +101,7 @@ async def create_item(image:UploadFile,
 # 상품 목록 보여주기
 @app.get('/items')
 async def get_items(user=Depends(manager)):
-    # 컬렴명도 같이 가져옴
+    # 컬럼명도 같이 가져옴
     con.row_factory = sqlite3.Row
     cur = con.cursor()
     rows = cur.execute(f"""
