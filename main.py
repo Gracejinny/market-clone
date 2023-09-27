@@ -26,19 +26,16 @@ cur.execute(f"""
 app = FastAPI()
 
 #SECRET 키는 중요!
-SERCRET = "super-coding"
-manager = LoginManager(SERCRET, '/login')
+SECRET = "super-coding"
+manager = LoginManager(SECRET, '/login')
 
 # 유저 찾기
 @manager.user_loader()
-def query_user(data):
-    WHERE_STATEMENTS = f'id="{data}"'
-    if type(data) == dict:
-        WHERE_STATEMENTS = f'''id="{data['id']}"'''
+def query_user(id):
     con.row_factory = sqlite3.Row
     cur = con.cursor()
     user = cur.execute(f"""
-                       SELECT * from users WHERE {WHERE_STATEMENTS}'
+                       SELECT * from users WHERE id='{id}'
                        """).fetchone()
     return user
 
@@ -54,11 +51,11 @@ def login(id:Annotated[str,Form()],
         raise InvalidCredentialsException
     
     access_token = manager.create_access_token(data={
-        'sub' : {
+        # 'sub' : {
             'id':user['id'],
             'name':user['name'],
             'email':user['email']
-        }
+        # }
     })
     
     return {'access_token':access_token}
